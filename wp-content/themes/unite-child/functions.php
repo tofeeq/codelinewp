@@ -337,3 +337,30 @@ function film_meta_value_filter( $content, $taxonomy) {
 }
 
 add_filter( 'film_meta_value', 'film_meta_value_filter', 10, 2 );
+
+/* ----------------SHORT CODE-------------------- */
+function shortcode_films() {
+	//film_archive_content_filter
+	$args = array(
+		'numberposts' => 5,
+		'offset' => 0,
+		'orderby' => 'post_date',
+		'order' => 'DESC',
+		'post_type' => 'film',
+		'post_status' => 'publish',
+	);
+
+	$recent_films = wp_get_recent_posts( $args, ARRAY_A );
+
+	$out = '<div class="widget"><ul>';
+	foreach ($recent_films as $film) {
+		$out .= '<li>
+					<a href="' .  get_post_permalink($film['ID']) . '">' . $film['post_title'] . '</a>
+				</li>';	
+	}
+	$out .= "</ul></div>";
+	return $out;
+}
+
+//add_filter('widget_text','do_shortcode');
+add_shortcode( 'films', 'shortcode_films' );
