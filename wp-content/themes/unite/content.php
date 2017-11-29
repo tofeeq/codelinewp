@@ -3,7 +3,6 @@
  * @package unite
  */
 ?>
-<h2>IN content template </h2><?php echo __FILE__; ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 	<header class="entry-header page-header">
