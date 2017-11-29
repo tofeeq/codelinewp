@@ -26,6 +26,7 @@ add_action( 'wp_enqueue_scripts', 'unite_child_enqueue_styles' );
 
 //all initialization hooks will go here 
 function unite_init() {
+	register_taxonomies_film();
 	register_post_type_film();
 }
 
@@ -67,7 +68,145 @@ function register_post_type_film() {
         'has_archive'        	=> true,
         'hierarchical'       	=> false,
         'menu_position'      	=> null,
+        'taxonomies'			=> ['genre', 'country', 'year', 'actor'],
+        //'register_meta_box_cb' 	=> "film_metabox"
       )
     );
 
+}
+
+//register taxonomies for the films
+function register_taxonomies_film() {
+
+	//register genre
+
+	$labels = array(
+		'name'                       => _x( 'Genre', 'taxonomy general name', 'film' ),
+		'singular_name'              => _x( 'Genre', 'taxonomy singular name', 'film' ),
+		'search_items'               => __( 'Search Genres', 'film' ),
+		'popular_items'              => __( 'Popular Genres', 'film' ),
+		'all_items'                  => __( 'All Genres', 'film' ),
+		'parent_item'                => null,
+		'parent_item_colon'          => null,
+		'edit_item'                  => __( 'Edit Genre', 'film' ),
+		'update_item'                => __( 'Update Genre', 'film' ),
+		'add_new_item'               => __( 'Add New Genre', 'film' ),
+		'new_item_name'              => __( 'New Genre Name', 'film' ),
+		'separate_items_with_commas' => __( 'Separate Genres with commas', 'film' ),
+		'add_or_remove_items'        => __( 'Add or remove Genre', 'film' ),
+		'choose_from_most_used'      => __( 'Choose from the most used Genres', 'film' ),
+		'not_found'                  => __( 'No Genre found.', 'film' ),
+		'menu_name'                  => __( 'Genres', 'film' ),
+	);
+
+	$args = array(
+		'hierarchical'          => false,
+		'labels'                => $labels,
+		'show_ui'               => true,
+		'show_admin_column'     => true,
+		'update_count_callback' => '_update_post_term_count',
+		'query_var'             => true,
+		'rewrite'               => array( 'slug' => 'genre' ),
+	);
+
+	register_taxonomy( 'genre', 'film', $args );
+
+	//register country
+
+	$labels = array(
+		'name'                       => _x( 'Country', 'taxonomy general name', 'film' ),
+		'singular_name'              => _x( 'Country', 'taxonomy singular name', 'film' ),
+		'search_items'               => __( 'Search countries', 'film' ),
+		'popular_items'              => __( 'Popular countries', 'film' ),
+		'all_items'                  => __( 'All countries', 'film' ),
+		'parent_item'                => null,
+		'parent_item_colon'          => null,
+		'edit_item'                  => __( 'Edit Country', 'film' ),
+		'update_item'                => __( 'Update Country', 'film' ),
+		'add_new_item'               => __( 'Add New Country', 'film' ),
+		'new_item_name'              => __( 'New Country Name', 'film' ),
+		'separate_items_with_commas' => __( 'Separate Countries with commas', 'film' ),
+		'add_or_remove_items'        => __( 'Add or remove Country', 'film' ),
+		'choose_from_most_used'      => __( 'Choose from the most used Countries', 'film' ),
+		'not_found'                  => __( 'No Country found.', 'film' ),
+		'menu_name'                  => __( 'Countries', 'film' ),
+	);
+
+	$args = array(
+		'hierarchical'          => false,
+		'labels'                => $labels,
+		'show_ui'               => true,
+		'show_admin_column'     => true,
+		'update_count_callback' => '_update_post_term_count',
+		'query_var'             => true,
+		'rewrite'               => array( 'slug' => 'country' ),
+	);
+
+	register_taxonomy( 'country', 'film', $args );
+
+	//register country
+
+	$labels = array(
+		'name'                       => _x( 'Year', 'taxonomy general name', 'film' ),
+		'singular_name'              => _x( 'Year', 'taxonomy singular name', 'film' ),
+		'search_items'               => __( 'Search Years', 'film' ),
+		'popular_items'              => __( 'Popular Years', 'film' ),
+		'all_items'                  => __( 'All Years', 'film' ),
+		'parent_item'                => null,
+		'parent_item_colon'          => null,
+		'edit_item'                  => __( 'Edit Year', 'film' ),
+		'update_item'                => __( 'Update Year', 'film' ),
+		'add_new_item'               => __( 'Add New Year', 'film' ),
+		'new_item_name'              => __( 'New Year Name', 'film' ),
+		'separate_items_with_commas' => __( 'Separate Year with commas', 'film' ),
+		'add_or_remove_items'        => __( 'Add or remove Year', 'film' ),
+		'choose_from_most_used'      => __( 'Choose from the most used Year', 'film' ),
+		'not_found'                  => __( 'No Year found.', 'film' ),
+		'menu_name'                  => __( 'Years', 'film' ),
+	);
+
+	$args = array(
+		'hierarchical'          => false,
+		'labels'                => $labels,
+		'show_ui'               => true,
+		'show_admin_column'     => true,
+		'update_count_callback' => '_update_post_term_count',
+		'query_var'             => true,
+		'rewrite'               => array( 'slug' => 'year' ),
+	);
+
+	register_taxonomy( 'year', 'film', $args );
+
+	//register country
+
+	$labels = array(
+		'name'                       => _x( 'Actor', 'taxonomy general name', 'film' ),
+		'singular_name'              => _x( 'Actor', 'taxonomy singular name', 'film' ),
+		'search_items'               => __( 'Search Actors', 'film' ),
+		'popular_items'              => __( 'Popular Actors', 'film' ),
+		'all_items'                  => __( 'All Actors', 'film' ),
+		'parent_item'                => null,
+		'parent_item_colon'          => null,
+		'edit_item'                  => __( 'Edit Actor', 'film' ),
+		'update_item'                => __( 'Update Actor', 'film' ),
+		'add_new_item'               => __( 'Add New Actor', 'film' ),
+		'new_item_name'              => __( 'New Actor Name', 'film' ),
+		'separate_items_with_commas' => __( 'Separate Actors with commas', 'film' ),
+		'add_or_remove_items'        => __( 'Add or remove Actor', 'film' ),
+		'choose_from_most_used'      => __( 'Choose from the most used Actors', 'film' ),
+		'not_found'                  => __( 'No Actor found.', 'film' ),
+		'menu_name'                  => __( 'Actors', 'film' ),
+	);
+
+	$args = array(
+		'hierarchical'          => false,
+		'labels'                => $labels,
+		'show_ui'               => true,
+		'show_admin_column'     => true,
+		'update_count_callback' => '_update_post_term_count',
+		'query_var'             => true,
+		'rewrite'               => array( 'slug' => 'actor' ),
+	);
+
+	register_taxonomy( 'actor', 'film', $args );
 }
