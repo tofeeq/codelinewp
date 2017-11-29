@@ -278,3 +278,62 @@ function save_film_meta( $post_id ) {
       }
     }
 }
+
+
+/* ----------------------------------------------- */
+//filter the films to show the taxonomies and custom fields on listing page
+
+function film_archive_content_filter( $content ) {
+	global $post;
+
+	if ($post->post_type == 'film' && !is_single()) {
+
+		$taxonomies = ['country', 'genre'];
+	    $out = '<ul class="list-unstyled">';
+	    foreach ($taxonomies as $taxonomy) {        
+	        $out .= "<li>" . apply_filters('film_meta_key', $taxonomy) . ": ";
+	        // get the terms related to post
+	        $terms = get_the_terms( $post->ID, $taxonomy );
+	        if ( !empty( $terms ) ) {
+	            foreach ( $terms as $term )
+	                $out .= apply_filters('film_meta_value', '<a href="' . get_term_link($term->slug, $taxonomy) . '">' . $term->name . '</a> ', $taxonomy);
+	        }
+	        $out .= "</li>";
+	    }
+	    $out .= "<li>" . apply_filters('film_meta_key', "ticket price") . ": ";
+	    $out .= apply_filters('film_meta_value', get_post_meta($post->ID, 'ticket_price', 1), "ticket price");
+	    $out .= '</li>';
+	    $out .= "<li>" . apply_filters('film_meta_key', "release date") . ": ";
+	    $out .= apply_filters('film_meta_value', get_post_meta($post->ID, 'release_date', 1), "release date");
+	    $out .= '</li>';
+	    $out .= "</ul>";
+
+	    $content .= apply_filters('film_archive_meta', $out);
+	}
+
+	return $content;
+}
+
+add_filter( 'the_content', 'film_archive_content_filter' );
+
+
+/* --------------- Filters ------------------------ */
+function film_meta_key_filter( $content ) {
+	return ucwords($content);
+}
+add_filter( 'film_meta_key', 'film_meta_key_filter' );
+/* ----------------------------------------------- */
+function film_meta_value_filter( $content, $taxonomy) {
+	switch ($taxonomy) {
+		case 'ticket price':
+			return '$' . sprintf("%.2f", $content);	
+		break;
+
+		case 'release date':
+			return date("l, F j, Y", strtotime($content));
+		break;
+	}
+	return $content;
+}
+
+add_filter( 'film_meta_value', 'film_meta_value_filter', 10, 2 );
