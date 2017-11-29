@@ -30,7 +30,11 @@ function unite_init() {
 	register_post_type_film();
 }
 
+//wordpress hooks
+
 add_action("init", "unite_init");
+add_action( 'save_post', 'save_film_meta' );
+
 
 //register post type for films
 
@@ -69,7 +73,7 @@ function register_post_type_film() {
         'hierarchical'       	=> false,
         'menu_position'      	=> null,
         'taxonomies'			=> ['genre', 'country', 'year', 'actor'],
-        //'register_meta_box_cb' 	=> "film_metabox"
+        'register_meta_box_cb' 	=> "film_metabox"
       )
     );
 
@@ -100,7 +104,7 @@ function register_taxonomies_film() {
 	);
 
 	$args = array(
-		'hierarchical'          => false,
+		'hierarchical'          => true,
 		'labels'                => $labels,
 		'show_ui'               => true,
 		'show_admin_column'     => true,
@@ -133,7 +137,7 @@ function register_taxonomies_film() {
 	);
 
 	$args = array(
-		'hierarchical'          => false,
+		'hierarchical'          => true,
 		'labels'                => $labels,
 		'show_ui'               => true,
 		'show_admin_column'     => true,
@@ -166,7 +170,7 @@ function register_taxonomies_film() {
 	);
 
 	$args = array(
-		'hierarchical'          => false,
+		'hierarchical'          => true,
 		'labels'                => $labels,
 		'show_ui'               => true,
 		'show_admin_column'     => true,
@@ -199,7 +203,7 @@ function register_taxonomies_film() {
 	);
 
 	$args = array(
-		'hierarchical'          => false,
+		'hierarchical'          => true,
 		'labels'                => $labels,
 		'show_ui'               => true,
 		'show_admin_column'     => true,
@@ -209,4 +213,68 @@ function register_taxonomies_film() {
 	);
 
 	register_taxonomy( 'actor', 'film', $args );
+}
+
+//add meta box for custom fields to films
+function film_metabox() {
+	add_meta_box('film_meta', 'Additonal Info', 'render_film_meta', 'film', 'normal', 'default');
+}
+
+//create html for input controls associated with films
+function render_film_meta( $post ) {
+	$ticket_price = esc_attr (
+            get_post_meta( $post->ID, 'ticket_price', true )
+        );
+
+    $release_date = esc_attr (
+            get_post_meta( $post->ID, 'release_date', true )
+        );
+    
+
+    ?> 
+      <style>
+        .film-meta label {
+          display: block;
+        }
+      </style>
+      <div class="film-meta">
+        <p>
+          <label for="film_ticket_price">
+              <?php _e( 'Ticket Price', 'film' ); ?>
+          </label>
+          <input type="text" id="film_ticket_price" name="film_ticket_price" value="<?php echo $ticket_price; ?>"  /> 
+        </p>
+        <p>
+          <label for="film_release_date">
+              <?php _e( 'Release Date', 'film' ); ?>
+          </label>
+          <input type="text" id="film_release_date" name="film_release_date" value="<?php echo $release_date; ?>" /> 
+        </p>
+      </div>
+    <?php
+}
+
+
+//save the custom fields along with post
+
+function save_film_meta( $post_id ) {
+	$fields = [
+		'film_ticket_price',
+		'film_release_date'
+	];
+
+    foreach ($fields as $field) {
+
+      if (array_key_exists($field, $_POST)) {
+
+          $meta_field = str_replace("film_", "", $field);
+          $post_value = $_POST[$field];
+
+          update_post_meta(
+              $post_id,
+              $meta_field,
+              $post_value
+          );
+      }
+    }
 }
